@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>接金币小游戏</title>
   <style>
-    /* 全局样式 */
     body {
       margin: 0;
       padding: 0;
@@ -53,24 +52,38 @@
       overflow: hidden;
     }
 
-    /* 篮子样式 */
+    /* 倒计时样式 */
+    #countdown {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: rgba(0, 0, 0, 0.8);
+      color: white;
+      font-size: 48px;
+      font-weight: bold;
+      z-index: 10;
+    }
+
     #basket {
       position: absolute;
       bottom: 20px;
       left: 50%;
-      width: 150px; /* 默认宽度 */
-      height: 100px; /* 默认高度 */
+      width: 150px;
+      height: 100px;
       max-width: 200px;
       max-height: 200px;
       background-color: #8b4513;
       border-radius: 10px;
-      background-size: contain; /* 保持比例 */
+      background-size: contain;
       background-repeat: no-repeat;
       background-position: center;
       transform: translateX(-50%);
+      touch-action: none;
     }
 
-    /* 金币、福袋、炸弹样式 */
     .item {
       position: absolute;
       width: 50px;
@@ -83,27 +96,26 @@
     }
 
     .coin {
-      background-image: url('https://www.pngall.com/wp-content/uploads/5/Gold-Coin-PNG-Free-Download.png'); /* 普通金币 PNG */
+      background-image: url('https://cdn-icons-png.flaticon.com/512/1490/1490838.png');
       background-size: contain;
       background-repeat: no-repeat;
       background-position: center;
     }
 
     .fortune-bag {
-      background-image: url('https://www.pngitem.com/pimgs/m/15-152384_lucky-bag-png-lucky-bag-png-transparent-png.png'); /* 福袋 PNG */
+      background-image: url('https://cdn-icons-png.flaticon.com/512/706/706164.png');
       background-size: contain;
       background-repeat: no-repeat;
       background-position: center;
     }
 
     .bomb {
-      background-image: url('https://www.pngkit.com/png/full/104-1043135_explosive-bomb-png-clipart.png'); /* 炸弹 PNG */
+      background-image: url('https://cdn-icons-png.flaticon.com/512/686/686447.png');
       background-size: contain;
       background-repeat: no-repeat;
       background-position: center;
     }
 
-    /* 分数显示样式 */
     #score {
       position: absolute;
       top: 10px;
@@ -115,7 +127,6 @@
   </style>
 </head>
 <body>
-  <!-- 设置页面 -->
   <div id="settings-container">
     <h1>接金币小游戏 - 设置</h1>
     <label for="speed">掉落速度:</label>
@@ -127,8 +138,8 @@
     <button id="start-button">开始游戏</button>
   </div>
 
-  <!-- 游戏页面 -->
   <div id="game-container" style="display: none;">
+    <div id="countdown">3</div>
     <div id="basket"></div>
     <div id="score">Score: 0</div>
   </div>
@@ -136,26 +147,24 @@
   <script>
     const settingsContainer = document.getElementById('settings-container');
     const gameContainer = document.getElementById('game-container');
+    const countdown = document.getElementById('countdown');
     const basket = document.getElementById('basket');
     const scoreDisplay = document.getElementById('score');
     const speedInput = document.getElementById('speed');
     const basketImageInput = document.getElementById('basket-image');
     const startButton = document.getElementById('start-button');
 
-    let basketPosition = gameContainer.offsetWidth / 2 - 75;
+    let basketPosition = 0;
     let score = 0;
     let coinFallSpeed = 5; // 默认金币掉落速度
-    const basketSpeed = 20;
-    let gameRunning = false; // 游戏运行状态
+    let gameRunning = false;
 
-    // 切换到游戏页面
     startButton.addEventListener('click', () => {
       const userSpeed = parseInt(speedInput.value, 10);
       if (!isNaN(userSpeed)) {
         coinFallSpeed = userSpeed;
       }
 
-      // 如果用户上传了图片，则设置为篮子背景
       const file = basketImageInput.files[0];
       if (file) {
         const reader = new FileReader();
@@ -166,42 +175,44 @@
         reader.readAsDataURL(file);
       }
 
-      // 隐藏设置页面，显示游戏页面
       settingsContainer.style.display = 'none';
       gameContainer.style.display = 'block';
 
-      initializeGame();
-      gameRunning = true;
+      startCountdown();
     });
 
-    // 设置篮子的位置
-    function moveBasket(direction) {
-      if (direction === 'left' && basketPosition > 0) {
-        basketPosition -= basketSpeed;
-      } else if (direction === 'right' && basketPosition < gameContainer.offsetWidth - basket.offsetWidth) {
-        basketPosition += basketSpeed;
-      }
-      basket.style.left = `${basketPosition}px`;
+    function startCountdown() {
+      let timeLeft = 3;
+      countdown.textContent = timeLeft;
+      const interval = setInterval(() => {
+        timeLeft--;
+        if (timeLeft <= 0) {
+          clearInterval(interval);
+          countdown.style.display = 'none';
+          initializeGame();
+          gameRunning = true;
+        } else {
+          countdown.textContent = timeLeft;
+        }
+      }, 1000);
     }
 
-    // 生成金币、福袋或炸弹
     function createItem(type) {
       const item = document.createElement('div');
       item.classList.add('item');
-
       const startX = Math.random() * (gameContainer.offsetWidth - 50);
       item.style.left = `${startX}px`;
       item.style.top = `0px`;
 
       if (type === 'coin') {
-        const value = Math.floor(Math.random() * 5) + 1; // 随机分数 1-5
+        const value = Math.floor(Math.random() * 5) + 1;
         item.textContent = value;
-        item.dataset.value = value; // 保存分数
+        item.dataset.value = value;
         item.classList.add('coin');
       } else if (type === 'fortune-bag') {
-        const value = Math.floor(Math.random() * 6) + 5; // 随机分数 5-10
+        const value = Math.floor(Math.random() * 6) + 5;
         item.textContent = value;
-        item.dataset.value = value; // 保存分数
+        item.dataset.value = value;
         item.classList.add('fortune-bag');
       } else if (type === 'bomb') {
         item.classList.add('bomb');
@@ -211,14 +222,12 @@
       return item;
     }
 
-    // 下落逻辑
     function dropItems() {
       const items = document.querySelectorAll('.item');
       items.forEach((item) => {
         const currentTop = parseFloat(item.style.top);
         item.style.top = `${currentTop + coinFallSpeed}px`;
 
-        // 检测碰撞
         const itemLeft = parseFloat(item.style.left);
         const itemBottom = currentTop + 50;
 
@@ -236,20 +245,16 @@
           item.remove();
         }
 
-        // 删除落出屏幕的物品
         if (itemBottom > gameContainer.offsetHeight) {
           item.remove();
         }
       });
     }
 
-    // 初始化游戏
     function initializeGame() {
       basketPosition = gameContainer.offsetWidth / 2 - basket.offsetWidth / 2;
       basket.style.left = `${basketPosition}px`;
-      scoreDisplay.textContent = `Score: ${score}`;
 
-      // 定期生成金币、福袋和炸弹
       setInterval(() => {
         if (gameRunning) {
           const rand = Math.random();
@@ -261,9 +266,8 @@
             createItem('bomb');
           }
         }
-      }, 500);
+      }, 1000);
 
-      // 游戏循环
       function gameLoop() {
         if (gameRunning) {
           dropItems();
@@ -273,13 +277,12 @@
       gameLoop();
     }
 
-    // 键盘控制
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'ArrowLeft') {
-        moveBasket('left');
-      } else if (e.key === 'ArrowRight') {
-        moveBasket('right');
-      }
+    // 实现拖动篮子
+    basket.addEventListener('touchmove', (e) => {
+      const touch = e.touches[0];
+      const newX = touch.clientX - basket.offsetWidth / 2;
+      basketPosition = Math.max(0, Math.min(newX, gameContainer.offsetWidth - basket.offsetWidth));
+      basket.style.left = `${basketPosition}px`;
     });
   </script>
 </body>

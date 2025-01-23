@@ -428,10 +428,19 @@
         weightChange = `保持不变`;
       }
       // settingsContainer.style.display = 'none';
+      
       resultText.textContent = `2025年将挣 ${score} 万，体重将 ${weightChange}`;
-
       const nameInput = document.getElementById('name');
       const name = nameInput.value
+
+      if (name === '大胡') {
+        resultText.textContent = `${name}在2025年将挣 ${score} 万，体重将 ${weightChange}，曹雪定制特殊祝福：祝大胡新的一年夺回属于自己的一切！！`;
+      } else if (name === '婧一') {
+        resultText.textContent = `${name}在2025年将挣 ${score} 万，体重将 ${weightChange}，曹雪定制特殊祝福：祝婧一莫名其妙的享清福！！`;
+      } else {
+        resultText.textContent = `${name}在2025年将挣 ${score} 万，体重将 ${weightChange}`;
+      }
+
       if (name === '臭滂') {
         const newBackGround = document.getElementById('result-container');
         newBackGround.style.backgroundImage = `url('./zhuanshutu.jpg')`;

@@ -77,7 +77,7 @@
       width: 75px;
       height: 75px;
       background-image: url('https://cdn-icons-png.flaticon.com/512/3144/3144456.png');
-      background-size: 100% 100%; /* Ensure the image stretches to fill the entire basket */
+      background-size: 100% 100%;
       background-repeat: no-repeat;
       background-position: center;
       touch-action: none;
@@ -90,8 +90,9 @@
       text-align: center;
       font-size: 14px;
       font-weight: bold;
-      line-height: 20px;
+      line-height: 50px;
       color: white;
+      text-shadow: 1px 1px 2px #000;
     }
 
     .coin {
@@ -115,9 +116,25 @@
       background-position: center;
     }
 
+    .mystery-item {
+      background-image: url('https://cdn-icons-png.flaticon.com/512/815/815899.png');
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
+    }
+
     #score {
       position: absolute;
       top: 10px;
+      left: 10px;
+      font-size: 20px;
+      font-weight: bold;
+      color: #333;
+    }
+
+    #mystery-score {
+      position: absolute;
+      top: 40px;
       left: 10px;
       font-size: 20px;
       font-weight: bold;
@@ -150,7 +167,8 @@
     <div id="countdown">3</div>
     <div id="basket"></div>
     <div id="score">得分: 0</div>
-    <div id="timer">倒计时: 90s</div>
+    <div id="mystery-score">神秘得分: 0</div>
+    <div id="timer">倒计时: 60s</div>
   </div>
 
   <script>
@@ -159,6 +177,7 @@
     const countdown = document.getElementById('countdown');
     const basket = document.getElementById('basket');
     const scoreDisplay = document.getElementById('score');
+    const mysteryScoreDisplay = document.getElementById('mystery-score');
     const timerDisplay = document.getElementById('timer');
     const speedInput = document.getElementById('speed');
     const basketImageInput = document.getElementById('basket-image');
@@ -166,9 +185,10 @@
 
     let basketPosition = 0;
     let score = 0;
+    let mysteryScore = 0;
     let coinFallSpeed = 3;
     let gameRunning = false;
-    let remainingTime = 90;
+    let remainingTime = 60; // 游戏倒计时 60 秒
 
     startButton.addEventListener('click', () => {
       const userSpeed = parseInt(speedInput.value, 10);
@@ -181,12 +201,9 @@
         const reader = new FileReader();
         reader.onload = (event) => {
           basket.style.backgroundImage = `url(${event.target.result})`;
-          basket.style.backgroundSize = '100% 100%'; // Ensure the background image stretches to fill the basket
+          basket.style.backgroundSize = '100% 100%';
         };
         reader.readAsDataURL(file);
-      } else {
-        basket.style.backgroundImage = 'url("https://cdn-icons-png.flaticon.com/512/3144/3144456.png")';
-        basket.style.backgroundSize = '100% 100%'; // Ensure the background image stretches to fill the basket
       }
 
       settingsContainer.style.display = 'none';
@@ -206,6 +223,7 @@
           initializeGame();
           gameRunning = true;
           startGameTimer();
+          generateMysteryItems();
         } else {
           countdown.textContent = timeLeft;
         }
@@ -220,7 +238,7 @@
         if (gameRunning) {
           createItem();
         }
-      }, 1000);
+      }, 300); // 物品生成间隔调整为 300ms
 
       function gameLoop() {
         if (gameRunning) {
@@ -239,7 +257,7 @@
         } else {
           clearInterval(timerInterval);
           gameRunning = false;
-          alert(`游戏结束！你的最终得分是：${score}`);
+          alert(`游戏结束！\n你的最终得分是：${score}\n神秘得分：${mysteryScore}`);
         }
       }, 1000);
     }
@@ -268,6 +286,21 @@
       gameContainer.appendChild(item);
     }
 
+    function generateMysteryItems() {
+      setInterval(() => {
+        if (gameRunning) {
+          const mysteryItem = document.createElement('div');
+          mysteryItem.classList.add('item', 'mystery-item');
+          const startX = Math.random() * (gameContainer.offsetWidth - 50);
+          mysteryItem.style.left = `${startX}px`;
+          mysteryItem.style.top = `0px`;
+          mysteryItem.dataset.value = Math.floor(Math.random() * 7) - 3; // -3 到 3 的随机值
+          mysteryItem.textContent = mysteryItem.dataset.value; // 显示分数
+          gameContainer.appendChild(mysteryItem);
+        }
+      }, 3000); // 每 3 秒生成一个神秘道具
+    }
+
     function dropItems() {
       const items = document.querySelectorAll('.item');
       items.forEach((item) => {
@@ -282,8 +315,14 @@
           itemLeft + 25 > basketPosition &&
           itemLeft < basketPosition + 75
         ) {
-          score += parseInt(item.dataset.value, 10);
-          scoreDisplay.textContent = `得分: ${score}`;
+          const itemValue = parseInt(item.dataset.value, 10);
+          if (item.classList.contains('mystery-item')) {
+            mysteryScore += itemValue;
+            mysteryScoreDisplay.textContent = `神秘得分: ${mysteryScore}`;
+          } else {
+            score += itemValue;
+            scoreDisplay.textContent = `得分: ${score}`;
+          }
           item.remove();
         }
 
@@ -296,11 +335,8 @@
     basket.addEventListener('touchmove', (e) => {
       const touch = e.touches[0];
       let newX = touch.clientX - basket.offsetWidth / 2;
-      
-      // Ensure basket stays within screen bounds
       const maxRight = gameContainer.offsetWidth - basket.offsetWidth;
       newX = Math.max(0, Math.min(newX, maxRight));
-
       basketPosition = newX;
       basket.style.left = `${basketPosition}px`;
     });

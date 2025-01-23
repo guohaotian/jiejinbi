@@ -149,6 +149,38 @@
       font-weight: bold;
       color: #333;
     }
+
+    #result-container {
+      display: none;
+      text-align: center;
+      padding: 50px;
+      background-color: #f9f9f9;
+      height: 100vh;
+    }
+
+    #result-container h1 {
+      font-size: 32px;
+      margin-bottom: 20px;
+    }
+
+    #result-container p {
+      font-size: 20px;
+      margin-top: 10px;
+    }
+
+    #result-container button {
+      font-size: 18px;
+      padding: 10px 20px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    #result-container button:hover {
+      background-color: #0056b3;
+    }
   </style>
 </head>
 <body>
@@ -171,9 +203,17 @@
     <div id="timer">倒计时: 60s</div>
   </div>
 
+  <div id="result-container">
+    <h1>游戏结束！</h1>
+    <p id="result-text"></p>
+    <button onclick="restartGame()">重新开始</button>
+  </div>
+
   <script>
     const settingsContainer = document.getElementById('settings-container');
     const gameContainer = document.getElementById('game-container');
+    const resultContainer = document.getElementById('result-container');
+    const resultText = document.getElementById('result-text');
     const countdown = document.getElementById('countdown');
     const basket = document.getElementById('basket');
     const scoreDisplay = document.getElementById('score');
@@ -188,7 +228,7 @@
     let mysteryScore = 0;
     let coinFallSpeed = 3;
     let gameRunning = false;
-    let remainingTime = 60; // 游戏倒计时 60 秒
+    let remainingTime = 60;
 
     startButton.addEventListener('click', () => {
       const userSpeed = parseInt(speedInput.value, 10);
@@ -238,7 +278,7 @@
         if (gameRunning) {
           createItem();
         }
-      }, 300); // 物品生成间隔调整为 300ms
+      }, 300);
 
       function gameLoop() {
         if (gameRunning) {
@@ -257,7 +297,7 @@
         } else {
           clearInterval(timerInterval);
           gameRunning = false;
-          alert(`游戏结束！\n你的最终得分是：${score}\n神秘得分：${mysteryScore}`);
+          showResultPage();
         }
       }, 1000);
     }
@@ -294,11 +334,11 @@
           const startX = Math.random() * (gameContainer.offsetWidth - 50);
           mysteryItem.style.left = `${startX}px`;
           mysteryItem.style.top = `0px`;
-          mysteryItem.dataset.value = Math.floor(Math.random() * 7) - 3; // -3 到 3 的随机值
-          mysteryItem.textContent = mysteryItem.dataset.value; // 显示分数
+          mysteryItem.dataset.value = Math.floor(Math.random() * 7) - 3;
+          mysteryItem.textContent = mysteryItem.dataset.value;
           gameContainer.appendChild(mysteryItem);
         }
-      }, 3000); // 每 3 秒生成一个神秘道具
+      }, 3000);
     }
 
     function dropItems() {
@@ -340,6 +380,26 @@
       basketPosition = newX;
       basket.style.left = `${basketPosition}px`;
     });
+
+    function showResultPage() {
+      gameContainer.style.display = 'none';
+      resultContainer.style.display = 'block';
+      
+      let weightChange = '';
+      if (mysteryScore > 0) {
+        weightChange = `增加 ${mysteryScore} 斤`;
+      } else if (mysteryScore < 0) {
+        weightChange = `减少 ${Math.abs(mysteryScore)} 斤`;
+      } else {
+        weightChange = `体重保持不变`;
+      }
+
+      resultText.textContent = `恭喜您，2025年将挣 ${score} 万，体重将 ${weightChange}`;
+    }
+
+    function restartGame() {
+      location.reload();
+    }
   </script>
 </body>
 </html>

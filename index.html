@@ -76,7 +76,7 @@
       bottom: 20px;
       width: 75px;
       height: 75px;
-      background-image: url('https://cdn-icons-png.flaticon.com/512/3144/3144456.png');
+      background-image: url('./morenlanzi.png');
       background-size: 100% 100%;
       background-repeat: no-repeat;
       background-position: center;
@@ -117,7 +117,7 @@
     }
 
     .mystery-item {
-      background-image: url('./liwu.png');
+      background-image: url('./BMI.png');
       background-size: contain;
       background-repeat: no-repeat;
       background-position: center;
@@ -379,6 +379,15 @@
       newX = Math.max(0, Math.min(newX, maxRight));
       basketPosition = newX;
       basket.style.left = `${basketPosition}px`;
+    });
+
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        const audio = new Audio('./haoyunlai.mp3');
+        audio.play().catch(error => {
+          console.log("自动播放失败", error);
+        });
+      }, 1000);  // 延迟1秒播放音频
     });
 
     function showResultPage() {

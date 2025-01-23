@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>接金币小游戏</title>
+  <title>凭本事接好运</title>
   <style>
     body {
       margin: 0;
@@ -14,14 +14,19 @@
 
     #settings-container {
       text-align: center;
-      padding: 50px;
-      background-color: #f5f5f5;
+      width: 100%;
       height: 100vh;
+      background-image: url('./shoutu.jpg');
+      background-size: cover;
+      background-position: center;
     }
 
     #settings-container h1 {
       font-size: 28px;
       margin-bottom: 20px;
+      margin-top: 0;
+      padding-top: 20px;
+      padding-left: 20px;
     }
 
     #settings-container input {
@@ -153,14 +158,12 @@
     #result-container {
       display: none;
       text-align: center;
-      padding: 50px;
-      background-color: #f9f9f9;
+      width: 100%;
       height: 100vh;
-    }
+      background-image: url('./zhuanshutu.jpg');
+      background-size: cover;
+      background-position: center;
 
-    #result-container h1 {
-      font-size: 32px;
-      margin-bottom: 20px;
     }
 
     #result-container p {
@@ -178,6 +181,14 @@
       cursor: pointer;
     }
 
+    #settings-container .file {
+      margin-left: 100px;
+    }
+    #result-container #result-text {
+      padding-top: 200px;
+      margin-top: 0;
+      color: #fff;
+    }
     #result-container button:hover {
       background-color: #0056b3;
     }
@@ -185,12 +196,12 @@
 </head>
 <body>
   <div id="settings-container">
-    <h1>接金币小游戏 - 设置</h1>
-    <label for="speed">掉落速度:</label>
+    <h1>接好运小游戏 - 设置</h1>
+    <label for="speed">物品掉落速度:</label>
     <input type="number" id="speed" min="1" max="20" value="3">
     <br><br>
     <label for="basket-image">自定义篮子图片:</label>
-    <input type="file" id="basket-image" accept="image/*">
+    <input class="file" type="file" id="basket-image" accept="image/*">
     <br><br>
     <button id="start-button">开始游戏</button>
   </div>
@@ -204,7 +215,6 @@
   </div>
 
   <div id="result-container">
-    <h1>游戏结束！</h1>
     <p id="result-text"></p>
     <button onclick="restartGame()">重新开始</button>
   </div>
@@ -396,12 +406,11 @@
       } else if (mysteryScore < 0) {
         weightChange = `减少 ${Math.abs(mysteryScore)} 斤`;
       } else {
-        weightChange = `体重保持不变`;
+        weightChange = `保持不变`;
       }
 
-      resultText.textContent = `恭喜您，2025年将挣 ${score} 万，体重将 ${weightChange}`;
+      resultText.textContent = `2025年将挣 ${score} 万，体重将 ${weightChange}`;
     }
-
     function restartGame() {
       location.reload();
     }

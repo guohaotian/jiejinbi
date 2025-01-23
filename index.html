@@ -381,13 +381,30 @@
       basket.style.left = `${basketPosition}px`;
     });
 
-    window.addEventListener('load', () => {
-      setTimeout(() => {
-        const audio = new Audio('./haoyunlai.mp3');
-        audio.play().catch(error => {
-          console.log("自动播放失败", error);
-        });
-      }, 1000);  // 延迟1秒播放音频
+    startButton.addEventListener('click', () => {
+      // 播放音频
+      const audio = new Audio('./haoyunlai.mp3');
+      audio.play();
+
+      const userSpeed = parseInt(speedInput.value, 10);
+      if (!isNaN(userSpeed)) {
+        coinFallSpeed = userSpeed;
+      }
+
+      const file = basketImageInput.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          basket.style.backgroundImage = `url(${event.target.result})`;
+          basket.style.backgroundSize = '100% 100%';
+        };
+        reader.readAsDataURL(file);
+      }
+
+      settingsContainer.style.display = 'none';
+      gameContainer.style.display = 'block';
+
+      startCountdown();
     });
 
     function showResultPage() {

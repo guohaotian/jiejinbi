@@ -231,6 +231,11 @@
     let remainingTime = 60;
 
     startButton.addEventListener('click', () => {
+
+       // 播放音频
+      const audio = new Audio('./haoyunlai.mp3');
+      audio.play();
+
       const userSpeed = parseInt(speedInput.value, 10);
       if (!isNaN(userSpeed)) {
         coinFallSpeed = userSpeed;
@@ -379,32 +384,6 @@
       newX = Math.max(0, Math.min(newX, maxRight));
       basketPosition = newX;
       basket.style.left = `${basketPosition}px`;
-    });
-
-    startButton.addEventListener('click', () => {
-      // 播放音频
-      const audio = new Audio('./haoyunlai.mp3');
-      audio.play();
-
-      const userSpeed = parseInt(speedInput.value, 10);
-      if (!isNaN(userSpeed)) {
-        coinFallSpeed = userSpeed;
-      }
-
-      const file = basketImageInput.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = (event) => {
-          basket.style.backgroundImage = `url(${event.target.result})`;
-          basket.style.backgroundSize = '100% 100%';
-        };
-        reader.readAsDataURL(file);
-      }
-
-      settingsContainer.style.display = 'none';
-      gameContainer.style.display = 'block';
-
-      startCountdown();
     });
 
     function showResultPage() {
